@@ -1,0 +1,87 @@
+# ============================================================
+# CNC Machining Configuration
+# Edit these values to match your machine, material, and tools.
+# ============================================================
+
+# --- Machine Defaults ---
+machine:
+  max_spindle_rpm: 12000        # Maximum spindle speed (RPM)
+  max_feed_rate: 5000           # Maximum axis feed rate (mm/min)
+  rapid_feed_rate: 8000         # Rapid traverse rate for time estimation (mm/min)
+  travel_height: 50.0           # Safe Z for rapid moves between operations (mm)
+  work_coordinate: "G54"        # Work coordinate system
+
+# --- Material ---
+material:
+  name: "Aluminum 6061"
+  surface_speed: 200            # Cutting surface speed Vc (m/min)
+  chip_load: 0.05               # Feed per tooth fz (mm/tooth)
+  hardness_factor: 1.0          # Multiplier to adjust feeds/speeds (1.0 = baseline)
+
+# --- Tools ---
+tools:
+  roughing:
+    id: 1
+    description: "Flat End Mill - Roughing"
+    diameter: 10.0              # mm
+    flutes: 3
+    max_doc: 3.0                # Max axial depth of cut (mm)
+    max_woc: 7.0                # Max radial width of cut (mm)
+    stepover_pct: 60            # Stepover as % of tool diameter
+    corner_radius: 0.0          # 0 = sharp corner flat end mill
+
+  finishing:
+    id: 2
+    description: "Ball End Mill - Finishing"
+    diameter: 6.0               # mm
+    flutes: 2
+    max_doc: 0.5                # mm
+    stepover_pct: 15            # Finer stepover for surface finish
+    corner_radius: 3.0          # Half of diameter for ball end mill
+
+  drill:
+    id: 3
+    description: "Spot / Twist Drill"
+    diameter: 6.0               # Default drill diameter (mm) — overridden per hole
+    flutes: 2
+    point_angle: 118            # Drill point angle (degrees)
+
+# --- Roughing Strategy ---
+roughing:
+  strategy: "zigzag"            # zigzag | spiral (zigzag implemented)
+  stepdown: 2.0                 # Axial depth per pass (mm)
+  stepover_pct: 60              # Radial engagement (% of tool diameter)
+  lead_in: "ramp"               # ramp | plunge | helix
+  feed_factor: 1.0              # Multiplier on calculated feed rate
+  spindle_factor: 1.0           # Multiplier on calculated RPM
+
+# --- Finishing Strategy ---
+finishing:
+  strategy: "contour"           # contour | parallel | scallop
+  stepdown: 0.3                 # Axial depth per finish pass (mm)
+  stepover_pct: 15              # Radial stepover (% of tool diameter)
+  feed_factor: 0.6              # Slower feed for better surface quality
+  spindle_factor: 1.1           # Slightly higher RPM for finishing
+  spring_passes: 1              # Extra passes at same Z for surface accuracy
+  stock_to_leave: 0.0           # Material left after finishing (mm)
+
+# --- Drilling ---
+drilling:
+  peck_depth: 3.0               # Peck increment (mm)
+  retract_height: 2.0           # Retract above hole top between pecks (mm)
+  dwell_time: 0.5               # Dwell at bottom of hole (seconds)
+  feed_factor: 0.5              # Drill feed = chip_load * flutes * RPM * factor
+  spindle_factor: 0.8           # Lower RPM for drilling
+
+# --- Safety & Clearances ---
+safety:
+  clearance_plane: 50.0         # Z height for safe rapid moves (mm above part top)
+  retract_plane: 5.0            # Z height just above part for approach (mm)
+  coolant: "flood"              # flood | mist | off
+  stock_clearance: 2.0          # Extra material around bounding box for stock (mm)
+
+# --- Output ---
+output:
+  units: "metric"               # metric (G21) | imperial (G20)
+  line_numbers: true            # Prefix G-code lines with N-numbers
+  decimal_places: 3             # Coordinate precision
