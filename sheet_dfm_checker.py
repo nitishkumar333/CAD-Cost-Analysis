@@ -1,5 +1,7 @@
 import sys
 import math
+import argparse
+import yaml
 import cadquery as cq
 from OCP.BRepAdaptor import BRepAdaptor_Surface, BRepAdaptor_Curve
 from OCC.Core.GeomAbs import GeomAbs_Circle
@@ -727,13 +729,19 @@ class SheetMetalAnalyzer:
 # ---------------------------------------------------------------------------
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python sheet_metal_analyzer.py <step_file1> [step_file2 ...]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Sheet Metal DFM Checker")
+    parser.add_argument("step_file", nargs='+', help="Path to the .step or .stp file")
+    parser.add_argument("--config", help="YAML config file to override defaults", default=None)
+    args = parser.parse_args()
 
-    for step_file in sys.argv[1:]:
+    cfg = DEFAULT_CONFIG.copy()
+    if args.config:
+        with open(args.config) as f:
+            cfg.update(yaml.safe_load(f))
+
+    for step_file in args.step_file:
         try:
-            analyzer = SheetMetalAnalyzer(step_file)
+            analyzer = SheetMetalAnalyzer(step_file, config=cfg)
             analyzer.analyze()
         except Exception as e:
             print(f"Error processing {step_file}: {e}")

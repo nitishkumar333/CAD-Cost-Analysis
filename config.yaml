@@ -1,0 +1,12 @@
+process_type: "sheet_metal" # Options: "cnc", "sheet_metal"
+material: "aluminium"
+finish: "anodizing"
+
+# Thresholds
+min_wall_thickness_mm: 0.8
+max_part_volume_cm3: 30000.0
+max_finish_size_mm: [600, 400, 300]
+fidelity_min_faces: 4
+fidelity_edge_tolerance_mm: 0.01
+max_shells: 50
+min_hole_diameter_mm: 1.0

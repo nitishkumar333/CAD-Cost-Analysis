@@ -21,7 +21,7 @@ Usage:
 
 import sys
 import os
-import json
+import yaml
 import math
 import argparse
 import logging
@@ -129,7 +129,7 @@ class DFMReport:
 
     def to_json(self) -> str:
         data = {"file": self.file, "results": [asdict(r) for r in self.results]}
-        return json.dumps(data, indent=2)
+        return yaml.dump(data, sort_keys=False)
 
 
 # ── STEP loader ───────────────────────────────────────────────────────────────
@@ -728,8 +728,8 @@ def run_dfm_checks(filepath: str, cfg: dict) -> DFMReport:
 def main():
     parser = argparse.ArgumentParser(description="DFM Checker for STEP/STP files")
     parser.add_argument("step_file", help="Path to the .step or .stp file")
-    parser.add_argument("--config", help="JSON config file to override defaults", default=None)
-    parser.add_argument("--output-json", help="Write JSON report to this file", default=None)
+    parser.add_argument("--config", help="YAML config file to override defaults", default=None)
+    parser.add_argument("--output-yaml", help="Write YAML report to this file", default=None)
     parser.add_argument("--material", help="Material name (e.g. aluminium, steel)", default=None)
     parser.add_argument("--finish", help="Surface finish (e.g. anodizing, powder_coat)", default=None)
     args = parser.parse_args()
@@ -738,7 +738,7 @@ def main():
     cfg = DEFAULT_CONFIG.copy()
     if args.config:
         with open(args.config) as f:
-            cfg.update(json.load(f))
+            cfg.update(yaml.safe_load(f))
     if args.material:
         cfg["material"] = args.material
     if args.finish:
@@ -756,10 +756,10 @@ def main():
 
     report.print_summary()
 
-    if args.output_json:
-        with open(args.output_json, "w") as f:
-            f.write(report.to_json())
-        log.info(f"JSON report written to: {args.output_json}")
+    if args.output_yaml:
+        with open(args.output_yaml, "w") as f:
+            f.write(report.to_json()) # using the same to_json name to return yaml
+        log.info(f"YAML report written to: {args.output_yaml}")
 
     # Exit with non-zero if any failures
     has_fail = any(r.severity == Severity.FAIL for r in report.results)
