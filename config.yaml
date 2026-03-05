@@ -1,0 +1,18 @@
+process_type: "sheet_metal" # Options: "cnc", "sheet_metal"
+material: "aluminium"
+
+# cnc
+cnc_min_materail_thickness_mm: 0.8
+cnc_max_materail_thickness_mm: 40.0
+cnc_max_part_volume_cm3: 50000.0
+cnc_fidelity_min_faces: 4
+cnc_min_hole_diameter_mm: 1.0
+
+# sheet_metal
+sheet_min_materail_thickness_mm: 0.8
+sheet_max_materail_thickness_mm: 15.0
+sheet_max_part_volume_cm3: 30000.0
+sheet_min_hole_diameter_mm: 1.0
+sheet_fidelity_min_faces: 4
+sheet_max_bends: 20
+sheet_allow_non_sheet_features: false
