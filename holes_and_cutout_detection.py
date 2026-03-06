@@ -187,8 +187,8 @@ def analyze_pockets_in_step(step_file_path):
         print(f"--- Solid {idx} ---")
         print(f"Total Unique Pockets/Holes : {total}")
         if total > 0:
-            print(f"  -> Cylindrical           : {cyl_count}")
-            print(f"  -> Non-Cylindrical       : {non_cyl_count}\n")
+            print(f"  -> Holes         : {cyl_count}")
+            print(f"  -> Cutouts       : {non_cyl_count}\n")
             
             # for p_id, p_data in unique_pockets.items():
             #     p_type = "Cylindrical" if p_data['is_cylindrical'] else "Non-Cylindrical"

@@ -142,7 +142,33 @@ def detect_threads(step_file_path):
             print(f"    Dimensions: {length_x:.3f} x {length_y:.3f} x {length_z:.3f}")
             print(f"    Comprised of {len(cluster)} faces")
 
+import os
+import multiprocessing
+
+FOLDER = "original_step_files"
+TIMEOUT = 10  # seconds
+
+def run_detect_threads(step_path):
+    try:
+        detect_threads(step_path)
+    except Exception as e:
+        print(f"Error processing {step_path}: {e}")
+
 if __name__ == "__main__":
-    # Replace this string with the path to your STEP file
-    step_path = "/home/nitishkumar/Desktop/dfm/original_step_files/405-00089-00.step"
-    detect_threads(step_path)
+    step_files = [
+        os.path.join(FOLDER, f)
+        for f in os.listdir(FOLDER)
+        if f.lower().endswith((".step", ".stp"))
+    ]
+
+    for step_path in step_files[30:80]:
+        print(f"\nProcessing: {step_path}")
+
+        p = multiprocessing.Process(target=run_detect_threads, args=(step_path,))
+        p.start()
+        p.join(TIMEOUT)
+
+        if p.is_alive():
+            print(f"Timeout (> {TIMEOUT}s). Skipping {step_path}")
+            p.terminate()
+            p.join()
