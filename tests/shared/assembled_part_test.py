@@ -25,7 +25,6 @@ class AssembledPartTest(BaseTest):
                 bb = solid_bbox(s.wrapped)
                 boxes.append(bb)
                 solid_info.append({
-                    "index": idx,
                     "volume_cm3": round(vol, 2),
                     "bbox_mm": [
                         round(bb[3] - bb[0], 1),
