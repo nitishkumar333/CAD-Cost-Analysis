@@ -7,6 +7,9 @@ class ConfinedHollowTest(BaseTest):
 
     def analyze(self, solids: list, part=None) -> dict:
         try:
+            from OCP.TopExp import TopExp_Explorer
+            from OCP.TopAbs import TopAbs_SHELL, TopAbs_REVERSED
+
             if not solids:
                 return {
                     "check": self.name,
@@ -16,18 +19,29 @@ class ConfinedHollowTest(BaseTest):
                 }
 
             hollow_count = 0
+            solids_affected = 0
             for solid in solids:
-                shell_count = len(solid.Shells())
-                if shell_count > 1:
-                    hollow_count += 1
+                topods_solid = getattr(solid, 'wrapped', solid)
+                exp = TopExp_Explorer(topods_solid, TopAbs_SHELL)
+                solid_hollows = 0
+                while exp.More():
+                    shell = exp.Current()
+                    if shell.Orientation() == TopAbs_REVERSED:
+                        solid_hollows += 1
+                    exp.Next()
+                
+                if solid_hollows > 0:
+                    hollow_count += solid_hollows
+                    solids_affected += 1
 
-            if hollow_count:
+            if hollow_count > 0:
                 return {
                     "check": self.name,
                     "status": "FAIL",
-                    "message": f"{hollow_count} solid(s) contain internal hollow cavities with limited access.",
+                    "message": f"Found {hollow_count} internal hollow cavit{'y' if hollow_count == 1 else 'ies'} across {solids_affected} solid(s).",
                     "details": {
                         "confined_hollows": hollow_count,
+                        "solids_affected": solids_affected,
                         "advice": "Add drain/vent holes or redesign to eliminate enclosed voids.",
                     },
                 }
